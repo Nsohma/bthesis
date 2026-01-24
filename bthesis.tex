@@ -19,7 +19,7 @@
 %\renewcommand{\TODO}[1]{}
 
 \thesistype{学士特定課題研究論文}
-\title{日本のアニメーション制作現場の調査に基づく修正素材のタグ付け手法}
+\title{日本のアニメーション制作現場での調査に基く修正素材のタグ付け蓄積}
 \author{新穂 壮真}
 \studentid{22B30610}
 \affiliation{東京科学大学\\情報理工学院\\情報工学系} 
@@ -1460,19 +1460,6 @@ ufotableにて50カット分の第一原画修正を見せてもらい、
     \caption{作監修正における修正対象カテゴリ内訳}\label{sakkannshuusei}
 \end{figure}
 
-次に総作監修正について図\ref{sousakkannshuu}に示す。
-総作監修正は作監修正と同様の傾向が見られ、絵柄合わせという側面が強い。
-ただ、作監修正と比較すると、キャラクタの頭身やシルエットの修正が多く入っている印象だった。
-
-作監、総作監の修正ともに衣装の修正が多いのは、
-分析対象の作品が、柄のある着物など作画コストの高い衣装が多かった影響もあるだろう。
-
-
-
-
-
-
-
 
 \paragraph{総作監修正}
 総作監修正の分析結果を図\ref{sousakkannshuu}に示す。
@@ -1552,18 +1539,294 @@ ufotableにて50カット分の第一原画修正を見せてもらい、
 
 
 \section{修正の自動タグ付けの流れ}
-タグ付けの流れとしては以下のように考える。
+タグ付けの流れを図\ref{fuccitagging}に示す。
+まず、渕上らのシステムから上がってきた成果物である彩色済み画像をVLMと物体検出に推論させる。
+その後、修正素材と対応する彩色済み画像に対し、物体検出の箱を重ね、修正の書き込みがあるかどうか判定し、
+画面占有率と修正対象の部位について得る。
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{fig/fuccitagging.png}
+    \caption{渕上らのシステムの情報伝達の流れ}\label{fuccitagging}
+\end{figure}
 
-
-
+なお、前述したタグにおいて、
+\begin{itemize}
+    \item 原画担当者
+    \item 修正担当者
+\end{itemize}
+については既存の渕上らのシステムで蓄積することができるため、その他のタグの入手を考える。
 
 
 \section{VLMによる彩色画像のタグ付け}
+具体的なVLMによるタグ付けについて述べる。
+第二章で述べた通り、モデルとしてはQwen3 VLを採用する。
+
+VLMに出力させたいタグは以下の通りである。
+\begin{itemize}
+    \item 被写体の映り方・カメラアングル
+    \item 被写体の表情
+    \item 被写体の動き・姿勢
+\end{itemize}
+
+
+このためのプロンプトとして、以下の文章を採用する。
+
+\noindent 【目的】\\
+入力画像から、以下の5カテゴリだけを抽出して厳密にJSONのを出力してください。\\
+※ 5カテゴリ以外（\verb|outfit|/\verb|attributes|/\verb|colors|/\verb|objects|/\verb|style|/\verb|background|/\verb|text| 等）は出力しない。説明文・コメントも出さない。
+
+\medskip
+\noindent 【抽出カテゴリ（固定語彙の例つき）】
+\begin{enumerate}
+  \item 被写体の写り方（cropping）
+    \begin{itemize}
+      \item 候補（例）：\verb|close_up|（顔のアップ）, \verb|bust|（胸上/上半身）, \verb|half|（腰上/半身）, \verb|full|（全身）
+    \end{itemize}
+
+  \item カメラ角度・視点（camera\_angle）
+    \begin{itemize}
+      \item 候補（例）：\verb|front|（正面）, \verb|back|（背面）, \verb|profile|（側面/横顔）, \verb|low|（仰角）, \verb|high|（俯瞰）, \verb|three_quarter|（3/4視）
+    \end{itemize}
+
+  \item 姿勢（pose）
+    \begin{itemize}
+      \item 例：立つ/座る/歩く/走る/指さす/手を振る/抱える/持つ/かがむ/跳ぶ 等（短い動詞句、日本語でOK）
+    \end{itemize}
+
+  \item 表情（expression）
+    \begin{itemize}
+      \item 例：笑顔/怒り/悲しみ/驚き/困惑/無表情/緊張 等
+    \end{itemize}
+
+  \item 相互関係（interactions）※被写体が2人以上のとき必須
+    \begin{itemize}
+      \item 例：\verb|conversation|（会話）, \verb|handshake|（握手）, \verb|gaze_contact|（見つめ合い）, \verb|physical_contact|（接触）, \verb|group_action|（集団動作）
+    \end{itemize}
+\end{enumerate}
+
+\medskip
+\noindent 【人数に応じた出力ルール】
+\begin{itemize}
+  \item 被写体（人物/キャラ/生物など）の人数が0：空の \verb|subjects| は出さず、代わりに \verb|summary| のみ返す（\verb|interactions| も出さない）。
+  \item 1人：\verb|subjects| を1要素で出力。\verb|interactions| はキーごと省略。
+  \item 2人以上：\verb|subjects| に人数ぶんの要素を作成し、\verb|interactions| を必ず出力して \verb|participants| に \verb|subjects[].id| を参照させる。
+\end{itemize}
+
+\medskip
+\noindent 【信頼度（confidence）】
+\begin{itemize}
+  \item 0.0〜1.0 の小数（小数第2〜3位程度）で付与。
+  \item \verb|cropping| / \verb|camera_angle| はオブジェクト形式で値と信頼度を持たせる。
+  \item \verb|pose| / \verb|expression| は配列（複数候補可、各要素に \verb|confidence|）。
+  \item \verb|interactions| は各関係ごとに \verb|confidence| を持たせる。
+\end{itemize}
+
+\medskip
+\noindent 【不明時の扱い】
+\begin{itemize}
+  \item 不明な要素は出力しない(キーごと省略)。空配列は避ける。
+  \item 推測しすぎず、判断困難な場合は該当キーを省略する。
+\end{itemize}
+
+
+\medskip
+\noindent 【最終出力フォーマット（JSONのみ/UTF-8/改行可/キー順任意）】
+\begin{verbatim}
+{
+  "summary": "カット全体の要約（1〜2文）",
+  "subjects": [
+    {
+      "id": 1,
+      "cropping": { "value": "bust", "confidence": 0.00 },
+      "camera_angle": { "value": "front", "confidence": 0.00 },
+      "pose": [ { "description": "手を振る", "confidence": 0.00 } ],
+      "expression": [ { "description": "笑顔", "confidence": 0.00 } ]
+    }
+    // 2人以上なら id=2,3,... を追加
+  ],
+  // 2人以上のときだけ出力
+  "interactions": [
+    {
+      "type": "conversation|handshake|gaze_contact|physical_contact|group_action",
+      "participants": [1, 2],
+      "description": "簡潔な要約（例：向かい合って会話）",
+      "confidence": 0.00
+    }
+  ]
+}
+\end{verbatim}
+\noindent （注）上記以外のキー（\verb|outfit|/\verb|attributes|/\verb|colors|/\verb|objects|/\verb|style|/\verb|background|/\verb|text_in_image|/\\\verb|nsfw|/\verb|uncertainties|等）は出力しない。
+
+
+\vspace{\baselineskip}
+このように出力させた理由は、第一に出力を機械処理しやすい形式に統一するためである。
+本研究ではタグ付け結果を後段の集計・検索に利用するため、自由記述の文章をそのまま保存するよりも、
+固定語彙と階層構造を持つJSONとして返させた方が、データベースへの格納と後処理が安定する。
+第二に、VLMが生成しがちな冗長な説明や推測を抑制し、必要な情報に限定するためである。
+特に、衣装や背景など本研究の目的と直接関係しない要素が混入すると、タグの一貫性が失われ、
+後段の分析のノイズとなる。
+第三に、複数人物を想定した際にも、同一のスキーマで扱えるようにするためである。
+人数に応じた出力ルールを明示し、相互関係（interactions）を被写体ID参照で表現することで、
+カット全体としての関係性の記録が可能となる。
+最後に、confidenceを付与させることで、後段で閾値処理や人手確認の優先度付けを行いやすくし、
+実運用上の調整余地を確保することを意図した
+
+\newpage
 \section{物体検出による彩色画像のタグ検出}
-\section{姿勢推定による彩色画像の推定}
+\subsection{目的}
+本節では、調査から必要と整理したタグのうち、
+修正対象の部位および画面占有率を彩色済み画像から推定するために、
+物体検出モデルを用いたタグ付け手法を述べる。
+
+\subsection{検出対象（部位タグ）の設計}
+修正対象の部位は、分析・共有に有用であり、かつ検出可能性が高い粒度として以下の語彙を採用する。
+ここでは部位を、修正が発生しやすい単位と、物体検出で安定しやすい単位の両方を考慮して定めた。
+
+\begin{itemize}
+  \item face（顔）
+  \item eye（目）
+  \item mouth（口）
+  \item hair（髪）
+  \item hand（手）
+  \item arm（腕）
+  \item torso（胴体）
+  \item leg（脚）
+\end{itemize}
+
+実装上は、1枚の画像に対して上記語彙をまとめてプロンプトとして与え、
+各語彙に対する検出結果（バウンディングボックスとスコア）を取得する。
+同一語彙で複数の検出が得られた場合は、スコア上位のものを残すか、
+または人物領域（person）を別途検出して人物ごとに内部の部位を割り当てる。
+本研究では「修正部位」を主目的とするため、過検出を抑える観点から、
+語彙ごとに上位$k$件（例：$k=1$または$2$）に限定し、低スコア検出は破棄する。
+
+\subsection{画面占有率の算出}
+画面占有率は、被写体が画面内でどの程度の面積を占めるかを表す指標であり、
+仕事量や修正のしやすさの見積もりに関係すると考えられる。
+占有率$r$は、人物領域のバウンディングボックス面積を画像全体の面積で割った値として定義する。
+
+\begin{equation}
+  r = \frac{A_{\mathrm{person}}}{A_{\mathrm{image}}}
+\end{equation}
+
+人物領域が複数存在する場合は、合計面積を用いる。
+ただし、人物同士のバウンディングボックスが重なる場合は重複領域を二重計上しないよう、
+矩形の和集合面積を近似的に求める。
+また、人物領域の検出が不安定な場合は、顔や胴体など比較的安定な部位の外接矩形から
+人物の近似領域を構成し、占有率の代替として用いる。
+
+
 \section{修正部位のタグ付け}
+\subsection{基本方針}
+本節では、修正素材（修正絵）と彩色済み画像の対応が得られている状況を前提として、
+「どの部位に修正が入ったか」を自動推定する方法を述べる。
+4.3節で述べた通り、彩色済み画像に対して物体検出で得られた部位バウンディングボックスを重ね、
+その領域内に修正の書き込みが存在するかを判定する。
+
+
+\subsection{修正書き込み領域（修正マスク）の抽出}
+修正素材には、差分となる線が上から描き足される。
+そこで、修正素材から「書き込みのある画素」を抽出し、二値マスク$M$として表現する。
+具体的には、以下のいずれかの前処理を用いる。
+
+\begin{itemize}
+  \item 修正素材が透過を含む場合：アルファ値が閾値以上の画素を修正画素とみなす。
+  \item 透過がない場合：彩色済み画像との差分（RGBの絶対差）を取り、差分が閾値以上の画素を修正画素とみなす。
+\end{itemize}
+
+さらに、位置ずれや線の細さに起因する取りこぼしを抑えるため、
+二値マスクに対して膨張（dilation）などのモルフォロジー処理を適用し、
+「修正が存在する近傍」を広めに捉える。
+
+
+subsection{部位ごとの修正判定}
+各部位バウンディングボックス$B_i$（例：hand, faceなど）に対し、
+ボックス内部の修正画素数を数え、ボックス面積で正規化した比率$s_i$を計算する。
+
+\begin{equation}
+  s_i = \frac{ M \cap B_i }{ B_i }
+\end{equation}
+
+$s_i$が閾値$\tau$以上であれば、その部位に修正が入ったと判定し、
+「修正対象の部位」タグとして出力する。
+複数部位が同時に閾値を超える場合は、全てを採用し、
+後段の分析で「同時修正の共起」として扱えるようにする。
+逆に、すべての$s_i$が小さい場合は「部位不明」として出力しない（キーごと省略）ことで、
+過度な推測を避ける。
+
+\subsection{信頼度の付与}
+修正部位の信頼度は、(1) 物体検出スコアと、(2) 修正比率$s_i$の両方に依存すると考えられる。
+そこで、部位$i$の信頼度$c_i$を次のように定義する。
+
+\begin{equation}
+  c_i = \mathrm{score}(B_i)\cdot \min\left(1,\frac{s_i}{\tau}\right)
+\end{equation}
+
+これにより、検出自体が曖昧な部位や、修正が微小で判定が不安定な部位は信頼度が低くなり、
+人手確認の優先順位付けに利用できる。
+
+\subsection{マルチフレームへの対応}
+同一カットの複数フレームが与えられる場合は、各フレームで得た$s_i$を統合する。
+例えば、中央値や平均を用いて代表値を作り、
+最も安定して修正が観測された部位を優先して採用する。
+フレーム間で修正箇所が変化する場合は、4.4節の方針と同様に、
+summaryに変化を簡潔に記述しつつ、部位タグはカット全体の代表状態を採用する。
+
+
 \section{おわりに}
+本章では、調査で整理したタグを取得するために、
+VLM（Qwen3 VL）と物体検出（Grounding DINO）を組み合わせた自動タグ付け手法を提案した。
+VLMには、被写体の映り方・カメラアングル、表情、動き・姿勢、相互関係を
+固定スキーマのJSONとして出力させることで、後段の蓄積と分析に適した形式を実現した。
+また、物体検出により部位領域を取得し、修正素材から抽出した修正マスクとの重なりから
+修正部位を推定することで、修正の発生箇所を定量的に記録できる見通しを示した。
+
+一方で、修正素材と彩色済み画像の位置ずれ、重なりの多いカットにおける部位検出の不安定さ、
+微小な修正の検出感度などは課題として残る。
+これらは、位置合わせの強化（例：特徴点に基づく補正）や、
+アニメ制作素材に特化した検出モデルへの適応により改善できる可能性がある。
+次章では、本手法に基づく実装と評価方法について述べる。
+
+
+
+
+
+\begin{table}[h]
+    \centering
+    \caption{タグまとめ}\label{tagtable}
+    \begin{tabular}{|c|c|c|}\hline
+         & 入手方法 & 目的 \\ \hline
+        原画担当者 & 渕上らのシステム & 各作業者の癖の分析 \\
+        修正担当者 & 渕上らのシステム & 各作業者の癖の分析\\
+        被写体の映り方・カメラアングル & VLM & 37 \\
+        被写体の表情 & VLM &  各作業者の癖の分析\\ 
+        被写体の動き・姿勢 & VLM & 各作業者の癖の分析 \\ 
+        修正対象の部位 & 物体検出 & 各作業者の癖の分析 \\ 
+        画面占有率 & 物体検出 & 28 \\ \hline
+    \end{tabular}
+\end{table}
+
+
+
+
+
+
+\begin{table}[h]
+    \centering
+    \caption{タグまとめ}\label{tagtable}
+    \begin{tabular}{|c|c|}\hline
+        タグ & 入手方法  \\ \hline
+        原画担当者 & 渕上らのシステム \\
+        修正担当者 & 渕上らのシステム \\
+        被写体の映り方・カメラアングル & VLM \\
+        被写体の表情 & VLM \\ 
+        被写体の動き・姿勢 & VLM  \\ 
+        修正対象の部位 & 物体検出  \\ 
+        画面占有率 & 物体検出  \\ \hline
+    \end{tabular}
+\end{table}
+
 
 
 \chapter{評価}
