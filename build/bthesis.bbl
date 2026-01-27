@@ -1,5 +1,14 @@
 \begin{thebibliography}{10}
 
+\bibitem{an25}
+Xiang An, Yin Xie, Kaicheng Yang, Wenkang Zhang, Xiuwei Zhao, Zheng Cheng, Yirui Wang, Songcen Xu, Changrui Chen, Chunsheng Wu, Huajie Tan, Chunyuan Li, Jing Yang, Jie Yu, Xiyao Wang, Bin Qin, Yumeng Wang, Zizhen Yan, Ziyong Feng, Ziwei Liu, Bo~Li, and Jiankang Deng.
+\newblock Llava-onevision-1.5: Fully open framework for democratized multimodal training, 2025.
+
+\bibitem{bai25}
+Shaoyang Bai, Yang Cai, Ruicheng Chen, and et~al.
+\newblock Qwen3-vl technical report.
+\newblock 2025.
+
 \bibitem{detr}
 Nicolas Carion, et~al.
 \newblock End-to-end object detection with transformers.
@@ -11,16 +20,30 @@ FOUNDRY.
 \newblock \url{https://www.foundry.com/ja/products/nuke-family/hiero}, 2024.
 \newblock Accessed: 2024-11-08.
 
+\bibitem{gao25}
+Junyuan Gao, Jiahe Song, Jiang Wu, Runchuan Zhu, Guanlin Shen, Shasha Wang, Xingjian Wei, Haote Yang, Songyang Zhang, Weijia Li, Bin Wang, Dahua Lin, Lijun Wu, and Conghui He.
+\newblock Pm4bench: A parallel multilingual multi-modal multi-task benchmark for large vision language model.
+\newblock {\em CoRR}, Vol. abs/2503.18484, , 2025.
+
 \bibitem{shotgrid}
 AREA JAPAN.
 \newblock Cg・映像・ゲーム業界向けにプロジェクト・アセット管理、レビュー機能がついた管理ツール flow production tracking（旧shotgrid）.
 \newblock \url{https://area.autodesk.jp/product/shotgrid/}, 2024.
 \newblock Accessed: 2024-11-08.
 
+\bibitem{joshi26}
+Siddharth Joshi, Haoli Yin, Rishabh Adiga, Ricardo Monti, Aldo Carranza, Alex Fang, Alvin Deng, Amro Abbas, Brett Larsen, Cody Blakeney, Darren Teh, David Schwab, Fan Pan, Haakon Mongstad, Jack Urbanek, Jason Lee, Jason Telanoff, Josh Wills, Kaleigh Mentzer, Luke Merrick, Parth Doshi, Paul Burstein, Pratyush Maini, Scott Loftin, Spandan Das, Tony Jiang, Vineeth Dorna, Zhengping Wang, Bogdan Gaza, Ari Morcos, and Matthew Leavitt.
+\newblock Datbench: Discriminative, faithful, and efficient vlm evaluations, 2026.
+
 \bibitem{glip}
 Liunian~Harold Li, et~al.
 \newblock Grounded language-image pre-training.
 \newblock In {\em CVPR}, 2022.
+
+\bibitem{liu23}
+Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong~Jae Lee.
+\newblock Visual instruction tuning.
+\newblock In {\em Advances in Neural Information Processing Systems (NeurIPS)}, 2023.
 
 \bibitem{groundingdino}
 Shilong Liu, et~al.
@@ -33,16 +56,43 @@ MemoRy-TeCH.
 \newblock \url{https://kaleida.jp/service/anikuro/}, 2024.
 \newblock Accessed: 2024-11-08.
 
+\bibitem{han25}
+{Microsoft}, Abdelrahman Abouelenin, Atabak Ashfaq, Adam Atkinson, and et~al.
+\newblock Phi-4-mini technical report: Compact yet powerful multimodal language models via mixture-of-loras, 2025.
+
+\bibitem{mistral25}
+{Mistral AI}.
+\newblock Introducing mistral 3: The next generation of open multimodal and multilingual ai, December 2025.
+\newblock Online; accessed 2026-01-24.
+
 \bibitem{savepoint}
 MUGENUP.
 \newblock Save point - セーブポイント.
 \newblock \url{https://mugenup.com/services/savepoint/}, 2024.
 \newblock Accessed: 2024-11-08.
 
+\bibitem{mukherjee25}
+Arka Mukherjee and S.~Ghosh.
+\newblock mmjee-eval: A bilingual multimodal benchmark for evaluating scientific reasoning in vision-language models, 2025.
+
+\bibitem{radford21}
+Alec Radford, Jong~Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever.
+\newblock Learning transferable visual models from natural language supervision.
+\newblock In {\em Proceedings of the International Conference on Machine Learning (ICML)}, Vol. 139 of {\em Proceedings of Machine Learning Research (PMLR)}, pp. 8748--8763, 2021.
+
 \bibitem{yolo}
 Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi.
 \newblock You only look once: Unified, real-time object detection.
 \newblock In {\em CVPR}, 2016.
+
+\bibitem{sanseviero25}
+Omar Sanseviero and Philipp Schmid.
+\newblock Introducing gemma 3: The developer guide, March 2025.
+\newblock Online; accessed 2026-01-24.
+
+\bibitem{wang25}
+Weiyun Wang, Zhangwei Gao, Lixin Gu, Hengjun Pu, Long Cui, Xingguang Wei, Zhaoyang Liu, Linglin Jing, Shenglong Ye, Jie Shao, Zhaokai Wang, Zhe Chen, Hongjie Zhang, Ganlin Yang, Haomin Wang, Qi~Wei, Jinhui Yin, Wenhao Li, Erfei Cui, Guanzhou Chen, Zichen Ding, Changyao Tian, Zhenyu Wu, Jingjing Xie, Zehao Li, Bowen Yang, Yuchen Duan, Xuehui Wang, Songze Li, Xiangyu Zhao, Haodong Duan, Nianchen Deng, Bin Fu, Yinan He, Yi~Wang, Conghui He, Botian Shi, Junjun He, Yingtong Xiong, Han Lv, Lijun Wu, Wenqi Shao, Kaipeng Zhang, Huipeng Deng, Biqing Qi, Jiaye Ge, Qipeng Guo, Wenwei Zhang, Wanli Ouyang, Limin Wang, Min Dou, Xizhou Zhu, Tong Lu, Dahua Lin, Jifeng Dai, Bowen Zhou, Weijie Su, Kai Chen, Yu~Qiao, Wenhai Wang, and Gen Luo.
+\newblock Internvl3.5: Advancing open-source multimodal models in versatility, reasoning, and efficiency, 2025.
 
 \bibitem{dino}
 Hao Zhang, et~al.
