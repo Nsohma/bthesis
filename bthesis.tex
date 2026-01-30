@@ -1,14 +1,17 @@
+\PassOptionsToPackage{dvipdfmx}{graphicx,xcolor}
 \documentclass[11pt,oneside,openany,report]{jsbook}
 
 \usepackage[a4paper,truedimen,margin=25truemm]{geometry}
 \usepackage{cscover}
 \usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{xcolor} % ★明示しておくと安全
 \usepackage[nobreak]{cite}
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage[most]{tcolorbox}  % ★ここで tcolorbox
 \usepackage[a4paper,dvipdfmx,pdfdisplaydoctitle=true,%
     bookmarks=true,bookmarksnumbered=true,bookmarkstype=toc,bookmarksopen=true,%
     pdftitle={日本のアニメーション制作現場での調査に基く修正素材のタグ付け蓄積},%
@@ -65,7 +68,7 @@
 制作ノウハウや現場での判断の多くが個人の経験や属人的な管理に依存しているのが現状である。
 
 こうした状況を受けて、これまでにアニメーション制作におけるデータ管理や
-中間生成物の蓄積を目的とした研究・システム開発がいくつか行われてきた。
+中間生成物の蓄積を目的とした研究・システム開発がいくつか行われてきた。\cite{aimdb}\cite{fucci}
 しかし、それらはいずれも修正という行為そのもの、
 すなわち演出や作画監督による修正指示や、その結果として更新された原画・動画といった情報を、
 データ活用の観点から蓄積することには十分な焦点を当てていない。
@@ -76,17 +79,17 @@
 修正は、作品のクオリティや作業者ごとの傾向を端的に反映する情報でありながら、
 多くの場合は各カットの中に埋もれた形で扱われ、体系的に蓄積・分析されてこなかったと言える。
 
-そこで本論文では、実際のアニメーション制作現場で役立つ視点から、
-修正のタグ付けとその活用方法を提案することを目的とする。
+そこで本論文では、実際のアニメーション制作現場で役立てる視点から、
+修正の活用方法の提案と、それを見据えた修正の整理・蓄積を考える。
 %その蓄積と利活用を主な対象とする。具体的には、原画や動画に対する演出修正・
 %作画監督修正などの作画上の修正情報を、従来のカットや中間生成物の管理とは
 %独立した形で収集・構造化し、それらを分析することで制作進行を円滑にするための
 %システムを提案することを目的とする。
-この目的を達成するため、アニメーション制作現場における修正の運用実態を調査し、
-現状の課題について考える。その上で実際の修正素材を見て分析し、
+この目的を達成するため、まず制作現場における修正の活用事例を調査し、現状の課題を抽出する。
+その上で実際の修正素材を見て分析し、
 どのような単位・粒度で修正を蓄積すべきかを整理し、修正に対してつけるタグについて設計する。
-次に、その結果に基づき、修正のタグ付けを行うシステムを提案し、
-そのシステムから得られるタグの活用可能性について議論する。
+次に、その結果に基づき、修正の自動タグ付けを行うシステムを提案し、
+同システムから得られるタグが実運用に耐えうる精度であるかについて議論・検証を行う。
 %最後に、提案システムを用いて修正データの傾向分析や可視化を行い、
 %その結果から制作進行の計画立案や人員配置の最適化といった場面における有用性を検証する。
 
@@ -219,7 +222,7 @@
 また、中間生成物と関連するアニメータの行動として、
 設定資料の閲覧、演出からの指示、タイムシートの更新履歴などが挙げられている。
 渕上らは、これらの中から特に設定資料の閲覧履歴に着目し、
-中間生成物の構造的な蓄積を可能にしている。
+中間生成物の構造的な蓄積を達成した。
 
 \section{アニメーション制作におけるデータ管理用ツール}\label{relative_tool}
 この節では、日本のアニメーション制作で用いられているデータ管理用ツールについて
@@ -573,43 +576,35 @@ AIMDB を試用してもらい、アニメ制作の実務家としての所感�
 を構築するのが容易であり、導入難易度が比較的低い点も利点として挙げられる。
 
 \subsection{渕上らのシステム\cite{fucci}}
-渕上らは、\ref{fucci_investigate}節の調査を踏まえ、
-中間生成物と関連するアニメータの行動を蓄積することで、カット間の関係接続を行い中間生成物を蓄積するシステムを提案した。
-さらに渕上らは、夏らのシステムと同様に、アニメ会社が本システムを利用するモチベーションを高めるため、
-アニメーションのクオリティ向上や作業時間短縮につながる付加価値機能を実装している。
-主な機能としては、以下の点が挙げられる。
+渕上らは、\ref{fucci_investigate}節の調査結果に基づき、夏らのシステムを拡張した新しいシステムを提案した。本システムは、アニメータの行動履歴と中間生成物を関連付けて蓄積することで、中間生成物の構造的な保存を可能にしている。 さらに、夏らのシステムが原画・動画工程のみを対象としていたのに対し、
+本システムではレイアウト工程や仕上げ工程、および各工程間のチェック工程まで対応範囲を拡大した。 夏らのシステムと同様、Webシステム上での情報伝達の過程で、各工程の中間生成物が自動的に蓄積される設計となっている（図\ref{fucciInforFlow}）。
+
+また、渕上らは、アニメ制作会社における導入の動機付けを強化するため、制作クオリティの向上や作業時間の短縮に寄与する付加価値機能を実装した。主な機能は以下の通りである。
 
 \begin{enumerate}
 \item TDTSへの対応とインタフェース改善\\
-デジタルタイムシート形式である TDTS の読み込みに対応させ、工程に応じて原画欄と動画欄を切り替えて利用できるようにしている。また、セル幅を削減することで十分なセル数を画面上に表示可能とし、紙のタイムシートに近いレイアウトを実現している。
-さらに、タイムシート上のセルにマウスオーバーした際に対応する絵を表示する機能を設けることで、映像を生成せずともカットの完成度を簡易的に確認できるようにしている。
+デジタルタイムシート形式である TDTS の読み込みに対応させ、工程に応じて原画欄と動画欄を切り替えて利用できるようにしている。
+また、セル幅を削減することで十分なセル数を画面上に表示可能とし、紙のタイムシートに近いレイアウトを実現している。
+さらに、タイムシート上のセルにマウスオーバーした際に対応する絵を表示する機能を設けることで、
+映像を生成せずともカットの完成度を簡易的に確認できるようにしている。
 \item 色付き素材を考慮した映像作成\\
-仕上げ工程を想定し、レイヤ合成時にアルファ値を考慮した映像作成機能を実装している。これにより、線画のみを対象とした夏らのシステムと異なり、色付きのセルを用いた映像確認が可能となっている。
+仕上げ工程を想定し、レイヤ合成時にアルファ値を考慮した映像作成機能を実装している。
+これにより、線画のみを対象とした夏らのシステムと異なり、色付きのセルを用いた映像確認が可能となっている。
 \item 各工程ツールとの連携と作業ファイルのダウンロード\\
-原画・動画・ペイントといった各工程で主に用いられる CLIP STUDIO PAINT との連携を考慮し、XDTS や TDTS 形式のデジタルタイムシートと各セルの絵を含むディレクトリ構造を zip 形式でダウンロードできるようにしている。
+原画・動画・ペイントといった各工程で主に用いられる CLIP STUDIO PAINT との連携を考慮し、
+XDTS や TDTS 形式のデジタルタイムシートと各セルの絵を含むディレクトリ構造を zip 形式でダウンロードできるようにしている。
 過去の版や最新の版を選択して中間生成物一式を取得できるため、現場の作業フローに組み込みやすい構成となっている。
 \end{enumerate}
 
-これらの機能に加え、原画工程と動画工程以外のレイアウト工程、仕上げ工程、各工程間のチェック工程も本システムで
-扱えるよう拡張し、夏らのシステムと同様に
- Web システム上で情報伝達を行う中で各工程の中間生成物が自動的に蓄積されるよう設計している。(図\ref{fucciInforFlow})
-アニメータがシステムを利用するだけで中間生成物とそれに関する行動履歴が蓄積され、
-中間生成物を構造的に蓄積できる点が、渕上らのシステムの特徴である。
+以上のように、制作現場の本システムを利用するモチベーション向上に繋がる付加価値の実装と、
+中間生成物の構造的な蓄積を実現した点が、
+本研究におけるアニメ制作支援への大きな貢献である。
 
-\begin{figure}[htbp]
-    \begin{center}
-        \includegraphics[scale = 0.7]{fig/fucciInfoflow.png}
-    \end{center}
-    \caption{渕上らのシステム : 全体設計}\label{fucciInforFlow}
-\end{figure}
+\section{データ管理に関する既存アニメ関連ツールの比較}
+\ref{relative_tool}節と\ref{relative_database}節で
+述べたデータ管理に関する各手法やツールを目的、制作現場での使用、制作中の保存、構造的な蓄積、修正の整理蓄積という
+4 つの観点より比較する。
 
-
-\section{既存アニメ関連ツールの比較}
-節\ref{relative_tool}と節\ref{relative_database}で
-述べた各手法やツールを目的、制作現場での使用、制作中の保存、構造的な蓄積、修正の整理蓄積という
- 4 つの観点より比較する。
-
-\newpage
 まず、各指標の選定理由について述べる。
 目的の項目では、手法やツールごとに何を目指しているか明らかにし、蓄積への注目度を示す。
 制作中の保存の指標は、アニメータ自身が制作中に中間生成物を蓄積できるかを示すものであり、
@@ -619,9 +614,10 @@ AIMDB を試用してもらい、アニメ制作の実務家としての所感�
 
 \begin{table}[h]
     \centering
+    \caption{データ管理に関するツールと手法の比較}\label{relativereserach}
     \scalebox{0.8}{
         \begin{tabular}{|c|c|c|c|c|c|}\hline
-         & 目的 & 制作中の保存 & 構造的な蓄積 & 修正の整理蓄積 \\ \hline
+        手法・ツール & 目的 & 制作中の保存 & 構造的な蓄積 & 修正の整理蓄積 \\ \hline
         flow production tracking\cite{shotgrid} &  制作管理 & $\bigcirc$ &$\times$ & $\times$\\
         save point\cite{savepoint} &  制作管理 & $\bigcirc$ & $\times$ & $\times$\\
         Hiero\cite{hiero} &  制作管理 & $\bigcirc$ & $\times$ & $\times$\\
@@ -633,7 +629,6 @@ AIMDB を試用してもらい、アニメ制作の実務家としての所感�
         渕上らのシステム\cite{fucci} & 蓄積 & $\bigcirc$ & $\bigcirc$ & $\times$\\ \hline
         \end{tabular}
     }
-    \caption{ツールと手法の比較}\label{relativereserach}
 \end{table}
 
 比較結果を表\ref{relativereserach}にまとめた。
@@ -684,19 +679,24 @@ AIMDB を試用してもらい、アニメ制作の実務家としての所感�
 以上の要件を満たす候補として後者を中心に整理する。
 
 \subsection{YOLO\cite{yolo}}
-YOLO （You Only Look Once） は  Redmon らにより提案された代表的なCNNベースの物体検出器であり、
-画像を一度だけネットワークに通して検出を完結させる
-単段（one-stage）検出器の流れを決定づけたモデルとして位置付けられる。
-二段方式（候補領域生成して分類する方式）と比べて処理が単純であるため、
-推論が高速になりやすく、リアルタイム物体検出の文脈で広く普及した。
+YOLO（You Only Look Once）は Redmon らにより提案された物体検出器であり、
+画像を一度ネットワークに通すだけで検出を完結させる単段（one-stage）方式の流れを決定づけたモデルである。
+初期のモデルは純粋なCNNベースのアーキテクチャであったが、近年のモデルでは、
+TransformerブロックやAttention機構をバックボーンやネックに組み込んだハイブリッドな構造も登場しており、
+現在も進化を続けている。
 
-YOLO 系の利点は「多数フレームに対して候補領域を一括抽出する処理を比較的軽量に実行できる」という点にある。
-ただし\ref{bounding_important}の通り、本研究において実行速度はそこまで重視しない。
-また、本モデルは後述する Transformer ベースの検出器と比べて検出の精度は劣る。
+本手法は、二段方式（領域候補を生成した後に分類する方式）と比較して処理が単純であるため推論が高速であり、
+リアルタイム物体検出の文脈で広く普及してきた。 YOLO系の利点は、
+多数のフレームに対して一括で物体検出を行う処理を比較的軽量に実行できる点にある。 
+ただし、\ref{bounding_important}節で述べる通り、本研究においては実行速度よりも精度の担保を優先する立場を取る。
+一般に、標準的なCNNベースのYOLOは、後述するTransformerベースの検出器（DETR等）と比較すると、
+特に複雑なシーンにおける検出精度で劣る傾向がある。
 
-また、YOLO系の物体検出器のほとんどはゼロショット検出に対応していない。
-したがって本章では、YOLO を物体検出の基礎的枠組みを示す参照（ベースライン）として位置付けつつ、
-後続で扱うオープンボキャブラリ検出器、また Transformer ベースの検出器へと議論を接続する。
+また、従来のYOLO系モデルの多くは、学習時に定義した特定のカテゴリのみを検出対象とするクローズドセット（Closed-set）
+の枠組みに従っており、未知の語彙に対応するゼロショット検出には対応していない。 したがって本章では、
+YOLOの初期モデルを「単段方式の基礎的枠組み」および「CNNベース検出器の発展形」としての参照（ベースライン）と位置づける。
+その上で、後続の節ではTransformerベースの検出器、
+およびオープンボキャブラリ検出器へと議論を展開し、本研究の提案手法へと接続する。
 
 \subsection{DETR\cite{detr}}
 DETR（DEtection TRansformer）は Carion らによって 2020 年に提案された物体検出モデルであり、
@@ -839,28 +839,18 @@ Grounding DINO は 物体検出のタスクで高い性能を示す一方、元�
 
 
 \subsection{各物体検出技術の比較}
-\begin{table}[h]
-    \centering
-    \caption{各物体検出の性能比較}\label{table_objectdetection}
-    \begin{tabular}{|c|c|c|}\hline
-        物体検出技術 & ベース & ゼロショット性 \\ \hline
-        YOLO & CNN & $\times$\\
-        DETR & Transformer & $\times$ \\
-        DINO & Transformer & $\times$ \\
-        GLIP &   & $\bigcirc$\\
-        Grounding Dino & Transformer & $\bigcirc$\\ 
-        MM Grounding Dino & Transformer & $\bigcirc$\\\hline
-    \end{tabular}
-\end{table}
+以上より、要件\ref{bounding_important}の一つであるゼロショット性を備えたモデルは、
+GLIP、Grounding Dino、MM Grounding Dinoの3つである。
 
-以上より、各物体検出の性能をまとめたものが
-表\ref{table_objectdetection}である。
+図\ref{zeroshot}に、GLIP、Grounding DINO、およびMM Grounding DINOの性能比較を示す\cite{mmgroundingdino}。
+本図の放射軸は、標準的な物体検出ベンチマークであるCOCOやLVISに加え、多様な実ドメインへの汎化性能を測るODinW
+（Object Detection in the Wild）、自然言語による指示から特定の物体を同定する参照表現理解（RefCOCO/+/g、gRefCOCO）、
+および自由記述に基づく検出能力を評価するD3（Description Detection Dataset）から構成される。これにより、モデルが持つ
+「広範な語彙への対応力」と「複雑な言語理解に基づく空間特定能力」を多角的かつ定量的に検証することが可能となっている。
 
-また、GLIP, Grounding Dino, MM Grounding Dino の精度を比較したものが次の図\ref{zeroshot}である\cite{mmgroundingdino}。
-これによると、MM Grounding Dino が他の検出器と比較して精度が高いことがわかる。
-またMM Grounding DinoはGrounding Dinoと違い、fine tuning が容易であることから、
-後にアニメ用の学習データセットが整備できた際、大きな精度向上が見込める。
-以上の点から、タグ付けに用いる物体検出モデルはMM Grounding Dinoを用いる。
+比較の結果、MM Grounding DINOが全指標において他の検出器を凌駕する高い性能を示した。
+また、本モデルはGrounding DINOと比較してファインチューニングが容易であるため、将来的にアニメ特化型の学習データセットが整備された際、
+さらなる精度向上が見込める。以上の検討に基づき、本研究におけるタグ付け用の物体検出モデルとしてMM Grounding DINOを採用する。
 
 
 \begin{figure}[h]
@@ -897,16 +887,6 @@ Google により公開されたオープンウェイトのモデル系列であ�
 （構成によって）マルチモーダル入力を扱えるモデルが提供されている。
 第三者の比較表においても MMMU / MathVista / DocVQA / ChartQA 等の結果が示されている\cite{gemma3_vision_table}。
 
-\subsection{ベンチマーク結果の参照と位置付け}
-VLMの比較にはMMMUやMathVista、DocVQA、ChartQAなど多様なベンチマークが用いられる。
-本研究でも候補モデルの公表値を参照したが、出典（論文・モデルカード・公式記事）間で推論設定
-（0-shot/5-shot、生成長、画像解像度、採点実装等）が必ずしも統一されていない可能性がある。
-したがって、本研究ではスコアの厳密な横並び比較ではなく、複数ベンチにおける性能傾向を把握する目的で参照する。
-
-参照した公表値では、Qwen3-VLおよびInternVL3.5は複数の視覚言語ベンチマークで高水準の性能が報告されており、
-総合的な視覚理解能力の観点から有望である。
-Phi-4-multimodalは軽量寄りのモデルとして公表値が提示されており、速度・運用コスト面の比較対象として位置付ける。
-Gemma 3はinstruction-tuned版が公開され、指示追従を含む一般用途への適性が期待できるため候補に含めた。
 
 \subsection{採択理由：Qwen3-VLを主モデルとする根拠}
 Qwen3-VLはモデルカードにおいて、事前学習データの拡張と品質向上により視覚認識能力が強化され、
@@ -922,8 +902,18 @@ Qwen3-VLはモデルカードにおいて、事前学習データの拡張と品
 
 
 \section{おわりに}
+本章では、日本のアニメーション制作におけるデータ蓄積の現状と、既存の管理ツールおよび蓄積手法について概観した。
+山川氏や松下らの議論により、中間生成物のアーカイブと利活用は、教育や制作支援において極めて高い価値を持つことが確認された。
+しかし、flow production trackingやSave Pointなどの既存ツールは主に「進行管理」を目的としており、
+中間生成物を将来的な分析や再利用に供するための構造的な蓄積という観点では不十分であることが明らかになった 。
 
-結論は、網羅的にかつ簡潔に。
+また、蓄積を主眼とした先行研究である新潟大学のAIMDBや渕上らのシステムについても検討した。
+渕上らのシステムは、アニメーターの行動履歴と中間生成物を紐付けることで構造的な蓄積を実現しているが、
+作品のクオリティや作業者の傾向を色濃く反映する修正に関する情報の詳細な整理・蓄積には至っていない 。
+
+これらを踏まえ、本研究では修正情報の蓄積と活用を目的とし、渕上らのシステムを基盤とした新しい仕組みを提案する。
+タグ付けの自動化においては、ゼロショット性能と精度、およびスタジオ内でのローカル運用を考慮し、
+物体検出モデルとしてMM Grounding DINO、視覚言語モデルとしてQwen3-VLを採用することとした 。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{アニメ会社への調査}
@@ -938,7 +928,7 @@ Qwen3-VLはモデルカードにおいて、事前学習データの拡張と品
 がどのように活用されているかを調査し、実際の素材の分析から今後の活用の
 観点においてどのように修正、リテイクへのタグを設計するか考察することである。
 
-調査の方法としては、株式会社 ufotable にインターンという形で
+調査の方法としては、ユーフォーテーブル有限会社(以下、ufotable)にインターンという形で
 受け入れていただき、制作進行の方への聞き込みや実際の素材の分析によって行った。
 
 
@@ -1135,7 +1125,7 @@ Qwen3-VLはモデルカードにおいて、事前学習データの拡張と品
 
 以上を踏まえると、第一原画の修正は演出意図のチェック（演出、監督）と作画としての成立（作監、総作監）
 が段階的に重なっていく形で発生し、修正絵とコメントを通じてカット内の前後フレームへ波及させながら整合を取る性質を持つ。
-第一原画の修正は第二原画が原画として反映させる。
+第一原画への修正の反映は第二原画が担当する。
 
 \subsection{第二原画への修正}
 第二原画に対するチェックでは、第一原画で設計された意図や修正指示を前提としつつ、第二原画として清書が成立しているか、
@@ -1602,7 +1592,6 @@ ufotableより第一原画修正50カット分（計306枚）の提供を受け�
 
 \section{VLMによる彩色画像のタグ付け}
 本節では、画像の内容（コンテキスト）に基づくタグ付け手法について詳述する。
-VLMには、第二章で選定した高解像度画像理解に長けるQwen3 VLを採用する。
 
 VLMによる推論を通じて取得を目指すタグは、以下の4カテゴリである。
 これらは物体検出よりもVLMによる意味的な理解が活きる項目として定義した。
@@ -1617,99 +1606,125 @@ VLMによる推論を通じて取得を目指すタグは、以下の4カテゴ�
 このためのプロンプトとして、以下の文章を採用する。
 
 
-
-
-
-\begin{quote}\small
-【目的】\\
-入力画像（単体 or 同一カットの複数フレーム）から，以下のカテゴリだけを抽出して厳密にJSONのみを出力してください。\\
+\begin{tcolorbox}[
+    breakable,
+    colback=white,      % 背景色（白）
+    colframe=black,     % 枠の色（黒）
+    arc=0mm,            % 角の丸み（0なら直角）
+    boxrule=0.5pt,      % 枠線の太さ
+    left=1em, right=1em, top=1em, bottom=1em % 内側の余白
+]
+\small
+【目的】
+入力画像（単体 or 同一カットの複数フレーム）から、以下のカテゴリだけを抽出して
+厳密にJSONのみを出力してください。\\
 ※ 許可していないカテゴリ（outfit/attributes/colors/style/text 等）や説明文・コメントは一切出さない。
 
-\vspace{0.8em}
-【抽出カテゴリ（出力してよいトップレベルキー）】\\
+【抽出カテゴリ（出力してよいトップレベルキー）】
 \begin{itemize}
   \item summary
   \item subjects
   \item interactions（被写体が2人以上のときのみ）
+  \item background
   \item props
 \end{itemize}
 
-\vspace{0.8em}
-【座標（bbox）のルール：必須】\\
+【座標（bbox）のルール：必須】
 \begin{itemize}
   \item subjects / props には bbox を含める。
-  \item bbox は4値の配列: [x\_min, y\_min, x\_max, y\_max]
-  \item 座標は正規化座標(0.0〜1.0)で表す。
-  \begin{itemize}
-    \item 原点(0,0)は画像の左上，(1,1)は右下。
-  \end{itemize}
-  \item 可能な限りタイトに囲う。判断不能なら，その要素自体を出力しない。
+  \item bbox は 4値の配列：\texttt{[x\_min, y\_min, x\_max, y\_max]}
+  \item 座標は正規化座標（0.0〜1.0）で表す。
+    \begin{itemize}
+      \item 原点(0,0)は画像の左上、(1,1)は右下。
+    \end{itemize}
+  \item 可能な限りタイトに囲う。判断不能なら、その要素自体を出力しない。
 \end{itemize}
 
-\vspace{0.8em}
-【被写体（subjects）の抽出カテゴリ（固定語彙の例つき）】\\
+【被写体（subjects）の抽出カテゴリ（固定語彙の例つき）】
 \begin{enumerate}
   \item 被写体の写り方（cropping）\\
-    候補（例）：close\_up（顔のアップ）, bust（胸上/上半身）, half（腰上/半身）, full（全身）
+    wide（引き/ロング：人物が画面内で小さく、全体の状況・空間を見せるショット）,
+    close\_up（顔や手のアップ）,
+    bust（胸上/上半身）,
+    half（腰上/半身）,
+    full（全身）から選択。
   \item カメラ角度・視点（camera\_angle）\\
-    候補（例）：front（正面）, back（背面）, profile（側面/横顔）, low（仰角）, high（俯瞰）, three\_quarter（3/4視）
-  \item 姿勢（pose）\\
-    例：立つ/座る/歩く/走る/指さす/手を振る/抱える/持つ/かがむ/跳ぶ 等（短い動詞句，日本語でOK）
-  \item 表情（expression）\\
-    例：笑顔/怒り/悲しみ/驚き/困惑/無表情/緊張 等
+    front（正面）, back（背面）, profile（側面/横顔）, low（仰角）, high（俯瞰）, three\_quarter（3/4視）から選択。
+  \item 姿勢（pose）※複数可、各要素にconfidence
+    \begin{itemize}
+      \item 立つ/座る/歩く/走る/跳ぶ/しゃがむ/ひざをつく/寝る
+      \item 指さす/手を振る/見る（注視する）/振り向く/腕組み/祈る（手を合わせる）
+      \item 抱える/持つ/手渡す
+      \item 構える（身構える）/攻撃する/防ぐ（ガードする）/逃げる
+    \end{itemize}
+    ※ 推測で埋めない。判別が弱い場合は pose 自体を省略する。
+  \item 表情（expression）※複数可、各要素にconfidence
+    \begin{itemize}
+      \item 笑顔/怒り/悲しみ/驚き/困惑/無表情/緊張
+      \item 泣き/焦り（慌て）/照れ/怯え/得意顔（ドヤ）
+      \item 後ろ向きなど、判別不能な場合は \texttt{None} とする。
+    \end{itemize}
   \item 相互関係（interactions）※被写体が2人以上のとき必須\\
-    例：conversation（会話）, handshake（握手）, gaze\_contact（見つめ合い）, physical\_contact（接触）, group\_action（集団動作）\\
-    根拠が弱い場合は推測で出さず,interactions 自体を省略する。
+    以下から選択：
+    \begin{itemize}
+      \item conversation（会話）, handshake（握手）, gaze\_contact（見つめ合い）, physical\_contact（接触）,
+            group\_action（集団動作）, confrontation（対峙）, chase（追跡：追う/追われる）
+      \item handover（受け渡し：物を渡す/受け取る）, support（介抱・支える：支援/救助含む）,
+            attack（攻撃：一方が他方を攻撃）, defense（防御：一方が他方から守る/かばう）
+      \item 根拠が弱い場合は推測で出さず、interactions 自体を省略する。
+    \end{itemize}
 \end{enumerate}
 
-\vspace{0.8em}
-【小物（props）】\\
+【背景（background）】
 \begin{itemize}
-  \item 人物以外の目立つ小物・道具・乗り物・武器・食べ物・家具，エフェクトなどを列挙する（背景そのものは含めない）。
-  \item props は複数可。各要素に name / bbox / confidence を付与する。
+  \item 背景を単語で示す。
+  \item 背景が判別不能（白背景など）のときは省略可能。
+  \item 判断不能なら background 自体を省略する（空配列は出さない）。
+\end{itemize}
+
+【小物（props）】
+\begin{itemize}
+  \item 人物以外の目立つ小物・道具・乗り物・武器・食べ物・家具、エフェクトなどを列挙する（背景そのものは含めない）。
+  \item props は複数可。各要素に \texttt{name / bbox / confidence} を付与する。
   \item 判断不能なら props 自体を省略する（空配列は出さない）。
 \end{itemize}
 
-\vspace{0.8em}
-【人数に応じた出力ルール】\\
+【人数に応じた出力ルール】
 \begin{itemize}
-  \item 被写体（人物/キャラ/生物など）の人数が0：
-  \begin{itemize}
-    \item subjects は出さない。
-    \item interactions も出さない。
-    \item summary は必須。
-    \item props は分かる範囲で出してよい。
-  \end{itemize}
-  \item 1人：
-  \begin{itemize}
-    \item subjects を1要素で出力する。
-    \item interactions はキーごと省略する。
-  \end{itemize}
-  \item 2人以上：
-  \begin{itemize}
-    \item subjects に人数ぶんの要素を作成し,id を 1..N で振る。
-    \item id の付け方は画面左→右(同程度なら大きい方優先)を基本として安定させる。
-    \item interactions を必ず出力し,participants は subjects[].id を参照する。
-  \end{itemize}
+  \item 被写体（人物/キャラ/生物など）の \textbf{人数が0}：
+    \begin{itemize}
+      \item subjects は出さない。
+      \item interactions も出さない。
+      \item summary は必須。
+      \item background / props は分かる範囲で出してよい。
+    \end{itemize}
+  \item \textbf{1人}：
+    \begin{itemize}
+      \item subjects を1要素で出力。
+      \item interactions はキーごと省略。
+    \end{itemize}
+  \item \textbf{2人以上}：
+    \begin{itemize}
+      \item subjects に人数ぶんの要素を作成し、id を 1..N で振る。
+      \item id の付け方は \textbf{画面左→右（同程度なら大きい方優先）} を基本として安定させる。
+      \item interactions を必ず出力し、participants は subjects[].id を参照する。
+    \end{itemize}
 \end{itemize}
 
-\vspace{0.8em}
-【信頼度（confidence）】\\
+【信頼度（confidence）】
 \begin{itemize}
-  \item 0.0〜1.0 の小数（小数第2〜3位程度）で付与する。
+  \item 0.0〜1.0 の小数（小数第2〜3位程度）で付与。
   \item cropping / camera\_angle はオブジェクト形式で value と confidence を持たせる。
-  \item pose / expression は配列（複数候補可，各要素に confidence を付与）とする。
-  \item bbox にも confidence を付与してよい（ただしキーは増やさず,bboxは配列のまま）。
+  \item pose / expression は配列（複数候補可、各要素に confidence）。
+  \item bbox にも confidence を付与してよい（ただしキーは増やさず、bbox は配列のまま）。
 \end{itemize}
 
-\vspace{0.8em}
-【不明時の扱い】\\
+【不明時の扱い】
 \begin{itemize}
-  \item 不明な要素は出力しない(キーごと省略)。空配列は避ける。
-  \item 推測しすぎず，判断困難な場合は該当キーを省略する。
+  \item 不明な要素は \textbf{出力しない（キーごと省略）}。空配列は避ける。
+  \item 推測しすぎず、判断困難な場合は該当キーを省略する。
 \end{itemize}
 
-\vspace{0.8em}
 【最終出力フォーマット（JSONのみ/UTF-8/改行可/キー順任意）】
 \begin{verbatim}
 {
@@ -1725,12 +1740,18 @@ VLMによる推論を通じて取得を目指すタグは、以下の4カテゴ�
     }
     //2人以上なら id=1,2,3... を追加
   ],
-  //2人以上のときのみ出力
+　//2人以上のときのみ出力
   "interactions": [
     {
       "type": "conversation|handshake|gaze_contact|physical_contact|group_action",
       "participants": [1, 2],
       "description": "簡潔な要約（例：向かい合って会話）",
+      "confidence": 0.00
+    }
+  ],
+  "background": [
+    {
+      "description": "劇場",
       "confidence": 0.00
     }
   ],
@@ -1742,14 +1763,14 @@ VLMによる推論を通じて取得を目指すタグは、以下の4カテゴ�
     }
   ]
 }
-\end{verbatim}
 
-（注）\\
-\begin{itemize}
-  \item ここに書かれていないキー（outfit/attributes/colors/objects/styleの別形式/text\_in\_image/nsfw/uncertainties 等）は出力しない。
-  \item 1人のときは interactions を出さない。0人のときは subjects と interactions を出さない。
-\end{itemize}
-\end{quote}
+（注）
+- ここに書かれていないキー（outfit/attributes/colors/objects/styleの別形式/text_in_image/nsfw/uncertainties 等）は **出力しない**。
+- 1人のときは interactions を出さない。0人のときは subjects と interactions を出さない。
+\end{verbatim}
+\end{tcolorbox}
+
+
 
 \vspace{\baselineskip}
 本研究において、上述のような厳密なプロンプトを設計した理由は、主に以下の4点に集約される。
@@ -1794,7 +1815,7 @@ VLMによる推論を通じて取得を目指すタグは、以下の4カテゴ�
   \item person (人)
 \end{itemize}
 
-実装においては、画像に対して上記語彙をプロンプトとして与えることで、
+実装においては、画像に対して上記語彙をゼロショット物体検出器にプロンプトとして与えることで、
 各部位のバウンディングボックス（以下、$B_i$）と検出スコアを取得する。
 複数人物が存在するカットにおいても、スコア閾値以上の検出結果をすべて保持することで、多人数構成に対応する。
 
@@ -1851,11 +1872,11 @@ $$
 
 \section{本章のまとめ}
 本章では、前章での実態調査に基づき設計した9項目のタグ\ref{tagtable}を自動付与するため、
-視覚言語モデル（VLM）と物体検出（Grounding DINO）を統合したハイブリッド型の自動タグ付け手法を提案した。
+VLMと物体検出を統合したハイブリッド型の自動タグ付け手法を提案した。
 
 本手法の成果と意義
 \begin{itemize}
-  \item 定性情報の構造化: Qwen3 VL を用いて、被写体の写り方、表情、動作、および相互関係を抽出するプロンプトを設計した。
+  \item 定性情報の構造化: VLMを用いて、被写体の写り方、表情、動作、および相互関係を抽出するプロンプトを設計した。
   出力を固定スキーマの JSON形式 に統一することで、制作現場での蓄積と統計的分析に適したデータ構造を実現した。
   \item 修正箇所の定量化: 物体検出によって特定した部位領域（Bounding Box）と、修正素材から生成した修正マスクを空間的に統合するロジックを定義した。これにより、従来は定性的な指示に留まっていた「修正の発生箇所」を、画素密度に基づく客観的なデータとして記録できる見通しを示した。
 \end{itemize}
@@ -1897,140 +1918,239 @@ $$
 
 \chapter{評価}
 \section{はじめに}
-本章では、前章で提案したタグ付け手法を用い、出力されたタグの精度を検証・考察する。
+本章では、前章で提案した手法によるタグ付けの精度を検証し、その結果を考察する。
 
-\section{自動で取得されたタグの精度に対する評価}
-
+\section{タグ付け実験と共通評価指標}
 \subsection{実験内容}
 NIITriggerのデータセット「LWA」\cite{trigger}に含まれる100カットのうち、
-ラフ原画に対する修正指示画像52枚を対象にタグ付けを行った。 
-なお、修正指示には類似した画像が多く含まれるため、各カットから代表的な修正画像を1枚または2枚選出した。
+第一原画に対する修正指示画像51枚を対象としてタグ付け実験を行った。 
+VLMのモデルにはQwen3-VL-30B-A3Bを、物体検出モデルにはMM Grounding Dino (Swin-L)を用いた。
+なお、修正指示には類似画像が多く含まれるため、各カットから代表的な修正画像を1枚または2枚選出した。
 
-\section{MM Grounding Dino により得られた修正部位の精度}
-\subsection{修正部位に関する評価データ}
-人手であらかじめ付与した正解ラベルと、システムによる自動推定ラベルを比較し評価を行った。 
-評価対象は52件（52ID）であり、
-各IDに対して付与される部位タグ（face, eyes, mouth, arm, nose, head, leg, person）
-をマルチラベル分類として扱う。
+\subsection{共通評価指標の定義}\label{hyouka_sihyou}
+本研究における自動タグ付けの精度を評価するため、以下の指標を定義する。
+各サンプルに対して、正解ラベルの集合を $G$、システムによる推定ラベルの集合を $P$ とする。このとき、True Positive (TP)、False Positive (FP)、False Negative (FN) をそれぞれ以下のように定義する。
+\begin{equation}
+    \mathrm{TP} = |G \cap P|, \quad \mathrm{FP} = |P \setminus G|, \quad \mathrm{FN} = |G \setminus P|
+\end{equation}
 
-なお、本研究における正解ラベルは「特定の部位が存在するか否か」を示す集合である。
-そのため、自動推定において同一のラベルが複数検出された場合でも、
-評価時には各ID内で重複を除いた集合（ユニークなラベルセット）として比較を行った。
+これらに基づき、適合率 (Precision)、再現率 (Recall)、および F1 スコア (F1-score) を算出する。
+\begin{equation}
+    \mathrm{Precision} = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FP}}, \quad \mathrm{Recall} = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FN}}, \quad \mathrm{F1} = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}}
+\end{equation}
 
-\subsection{評価指標}
-各IDに対して、正解ラベル集合を $G$，推定ラベル集合を $P$ とする。
-このとき True Positive（TP）、False Positive（FP）、False Negative（FN）を以下のように定義する。
-\[
-\mathrm{TP}=|G\cap P|,\quad
-\mathrm{FP}=|P\setminus G|,\quad
-\mathrm{FN}=|G\setminus P|
-\]
+また、マルチラベル分類における集合の一致度を測る指標として、以下のラベル集合に対する Jaccard 係数（IoU）および完全一致率（Exact Match Ratio）を併せて報告する。
+\begin{equation}
+    \text{Jaccard Index} = \frac{|G \cap P|}{|G \cup P|}
+\end{equation}
 
-これらの値に基づき、適合率（Precision）、再現率（Recall）、およびF1スコア（F1-score）を算出する。
-\[
-\mathrm{Precision}=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}},\quad
-\mathrm{Recall}=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}},\quad
-\mathrm{F1}=\frac{2\cdot \mathrm{Precision}\cdot \mathrm{Recall}}{\mathrm{Precision}+\mathrm{Recall}}
-\]
+さらに、全サンプル・全ラベルを合算して算出するマイクロ平均（Micro-average）と、各ラベルごとに算出した指標の平均をとるマクロ平均（Macro-average）
+を評価の目的に応じて適宜活用する。
 
+\section{VLM による彩色画像のタグ付け精度評価}
+\subsection{評価データと手法}
+Qwen3 VL を用い、画像全体からの属性抽出精度を検証する。
+評価には、 前述の 51 枚の画像を対象とし、人手により作成した正解データ（Ground Truth, 以下 GT）との比較評価を行った。
 
-本実験では、システム全体の性能を多角的に評価するため、以下の指標も併せて報告する。
+GT は以下の構成で定義されている。
 \begin{itemize}
-  \item Micro平均（Micro-average）: 全IDおよび全ラベルにわたってTP、FP、FNの総和を求め、それらから算出される全体的な指標。
-  \item Macro F1（Macro-average F1）: 8種類の部位ラベルごとに算出したF1スコアを算術平均したもの。
-  \item 完全一致率（Exact Match Ratio）: 推定ラベル集合 $P$ が正解ラベル集合 $G$ と完全に一致したサンプルの割合。
-  \item Jaccard係数（Jaccard Index）: 集合間の類似度を示す指標であり、以下の式で得られる値の全IDにおける平均を算出する。
+    \item \textbf{人数推定 (\texttt{id\_count})}: 画像内に存在する人物の総数
+    \item \textbf{人物属性}: 各人物に対し、画面左からの出現順に基づき \texttt{id} を割り当て、構図 (\texttt{cropping})、カメラアングル (\texttt{camera\_angle})、姿勢 (\texttt{pose})、表情 (\texttt{expression}) の各属性を付与する。なお、パースの解釈が複数分かれる場合は 「\texttt{or}」 表記による複数ラベルを許容し、情報の欠落や判定不能な箇所は 「\texttt{None}」 と定義した。
+    \item \textbf{小物 (\texttt{props})}: 画像内に存在する特定のアイテムを集合形式で列挙する。
+    \item \textbf{相互関係 (\texttt{interactions})}: 人物間のアクション（例：\texttt{group\_action}）を定義する。
 \end{itemize}
 
+評価には、前述の指標\ref{hyouka_sihyou}に加え、人数推定の精度を定量化するため、以下の平均絶対誤差 (MAE: Mean Absolute Error) を用いる。
+\begin{equation}
+    \mathrm{MAE} = \frac{1}{N} \sum_{i=1}^{N} |G_i - P_i|
+\end{equation}
+ここで、$N$ はサンプル数、$G_i$ および $P_i$ はそれぞれ第 $i$ サンプルにおける人数の正解値および推定値である。
+
+\subsection{実験結果と考察}
+Qwen3 VL による全体指標および人数・関係性の推定精度の要約を表 \ref{tab:qwen_overall} 、
+人物の属性別の推定精度を表 \ref{tab:qwen_attributes} に示す。
+
+\begin{table}[htbp]
+\centering
+\caption{全体指標および人数・関係性の推定精度}
+\label{tab:qwen_overall}
+\begin{tabular}{lc}
+\hline
+評価項目 & スコア \\ \hline
+人数一致率 (Exact Match) & 0.725 \\
+人数誤差 $\pm1$ 以内の割合 & 0.863 \\
+人数推定平均絶対誤差 (MAE) & 0.922 \\
+小物の推定精度 (Micro F1) & 0.348 \\
+相互関係の一致率 (Exact Match) & 0.667 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{人物属性別の推定精度}
+\label{tab:qwen_attributes}
+\begin{tabular}{lcc}
+\hline
+属性項目 & 精度 (Include None) & 精度 (Exclude GT None) \\ \hline
+映り方 (\texttt{cropping}) & 0.695 & 0.695 \\
+アングル (\texttt{camera\_angle}) & 0.415 & 0.447 \\
+姿勢 (\texttt{pose}) & 0.634 & 0.694 \\
+表情 (\texttt{expression}) & 0.317 & 0.377 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{失敗例の分析（Worst 10）}
+人物の属性別スコアの平均値が低い 10 サンプルについて，誤りの内訳を
+調査した。その結果、主に以下の 3 つの傾向が確認された。
+\begin{enumerate}
+  \item camera\_angle(カメラアングル) の誤りが頻発：正解（GT）が \texttt{three\_quarter}（斜め）や \texttt{low}（煽り）であるカットに対し、推定結果が \texttt{front}（正面）や \texttt{profile}（横顔）となる事例が頻発した
+  \item cropping(被写体の写り方)の取り違え：GT が \texttt{wide} であるのに対し、推定が \texttt{full} となる誤認識や、\texttt{bust} と \texttt{half} の混同が見られた。
+  \item expression (表情)の識別困難：GT の「得意顔」に対し「無表情」、GT の「怒り」に対し「驚き」と推定される事例があった。アニメーション特有の誇張や省略を伴う表情表現は、既存の語彙体系による分類が極めて困難であるといえる。
+\end{enumerate}
+
+
+\subsection{考察}
+実験結果から、VLM は 「人数、構図、人物間の関係性」といったマクロな情報の抽出において高い有用性を示すことが明らかになった。
+特に、構図（\texttt{cropping}）と姿勢（\texttt{pose}）は \texttt{Exclude None}（有効値のみ）において約 70\% の精度を記録しており、アニメ制作におけるカット内容の自動把握を支援する実用的な水準に達していると考えられる。 また、相互関係の Jaccard 係数が 0.696 という高い値を示したことは、VLM が画像全体のコンテキスト（文脈）理解に優れていることを裏付けている。
+一方で、微細な情報の判別には依然として課題が残る。カメラアングル（0.447）や表情（0.377）の精度が低迷した要因として、失敗例の分析により以下の傾向が浮き彫りとなった。
+
+\begin{enumerate}
+    \item \textbf{正面バイアス}: 被写体が斜め向きや煽りの構図であっても、一貫して \texttt{front}（正面）と出力する傾向がある。これは、VLM の学習データにおける正面画像の多さ、あるいは判断の保守性に起因するものと推測される。
+    \item \textbf{表情のデフォルメへの対応}: 「得意顔」や「怯え」といったアニメ特有の記号的な表情ラベルを、より一般的な「無表情」や「笑顔」と誤認する事例が散見された。
+\end{enumerate}
+
+以上の結果から、今後はアニメ画像に特化した Fine-tuning（微調整）や、プロンプトにおける語彙定義のさらなる厳密化が、精度向上のための極めて重要な鍵になると考えられる。
+
+\section{MM Grounding DINO による修正部位の精度評価}
+\subsection{修正部位に関する評価データ}
+人手により作成した正解データ（Ground Truth）と、システムによる推定結果を比較することで精度評価を行った。
+評価対象は51件（51ID）であり、
+評価対象は前述の 51 サンプルとし、各サンプルに付与される部位タグ（\texttt{face}, \texttt{eyes}, \texttt{mouth}, \texttt{arm}, \texttt{nose}, \texttt{head}, \texttt{leg}, \texttt{person}）を対象としたマルチラベル分類問題として扱う。
+
+なお、本評価における正解ラベルは「画像内に特定の修正指示部位が存在するか否か」を定義した集合である。
+そのため、自動推定において同一のラベルが複数のバウンディングボックスとして検出された場合であっても、
+評価に際してはサンプル内における重複を除いた集合（ユニークなラベルセット）として扱い、正解集合との一致度を算出した。
+
+\subsection{評価指標}
+各サンプルに対し、正解ラベル（部位）の集合を $G$、推定されたラベルの集合を $P$ とする。
+このとき、True Positive（TP）、False Positive（FP）、False Negative（FN）を以下のように定義する。
+$$\mathrm{TP}=|G\cap P|,\quad
+\mathrm{FP}=|P\setminus G|,\quad
+\mathrm{FN}=|G\setminus P|$$
+
+これらの値に基づき、適合率（Precision）、再現率（Recall）、およびF1スコア（F1-score）、Micro平均（Micro-average）
+Macro F1（Macro-average F1）、完全一致率（Exact Match Ratio）、平均Jaccard係数（Average Jaccard Index）を算出する。
+
 \subsection{評価結果}
-表\ref{tab:overall_eval}に、全体指標を示す。 
-本実験における各件数の合計は、TP=186、FP=38、FN=75であった。
-これに基づくMicro平均は、Precisionが0.830、Recallが0.713、F1スコアが0.767と、
-概ね良好な値を示した。
-
-一方で、各ID単位での厳密な評価では課題が残る結果となった。推定ラベル集合が正解と完全に
-一致した割合（Exact Match Ratio）は0.096（5/52件）と低水準に留まり、集合の類似度を
-示す平均Jaccard係数も0.581であった。
-
-これらの結果から、個々の部位レベルでは高い精度で検出できているものの、1枚の画像に含まれる
-複数の修正部位をすべて過不足なく抽出することの難しさが浮き彫りとなった。
-
-\begin{table}[h]
-  \centering
-  \caption{全体の評価結果（52件）}
+表\ref{tab:overall_eval}に、提案手法による全体指標を示す。
+全体的な評価指標を示す。
+全 51 サンプルを対象とした実験において、Micro F1 スコアは 0.850 を記録した。
+Micro Precision（0.853）と Micro Recall（0.847）が同水準であることから、
+本手法は誤検出と検出漏れが均衡した、極めて安定的な検出性能を有していることが確認できる。
+\begin{table}[h]\centering
+  \caption{全体の評価結果（51件）}
   \label{tab:overall_eval}
-  \begin{tabular}{l r}
-    \hline
-    指標 & 値 \\
-    \hline
-    件数 $N$ & 52 \\
-    TP / FP / FN & 186 / 38 / 75 \\
-    Micro Precision & 0.830 \\
-    Micro Recall & 0.713 \\
-    Micro F1 & 0.767 \\
-    Macro F1（8ラベル平均） & 0.745 \\
-    Exact match & 0.096 \\
-    平均Jaccard & 0.581 \\
-    \hline
+  \begin{tabular}{l r}\hline
+    指標 & 値 \\ \hline
+    件数 $N$ & 51 \\
+    TP / FP / FN & 221 / 38 / 40 \\
+    Micro Precision & 0.853 \\ 
+    Micro Recall & 0.847 \\
+    Micro F1 & 0.850 \\ 
+    Macro F1 & 0.773 \\
+    Exact match & 0.250 \\ 
+    平均Jaccard & 0.693 \\ \hline
   \end{tabular}
 \end{table}
 
-表\ref{tab:per_label_eval}に、部位ラベル別のPrecision、Recall、およびF1スコアを示す。
+表 \ref{tab:per_label_eval} に、部位ラベル別の評価結果を示す。
+部位別の分析では、\texttt{eyes} の Recall が 1.000、\texttt{mouth} の Recall が 
+0.964 を記録した。これは、正解として定義された顔パーツの修正箇所のほぼ全てを、
+本システムが網羅的に検出できていることを示している。
+また、\texttt{nose}（F1: 0.906）や \texttt{face}（F1: 0.872）も高い水準にあり、
+顔周辺の修正箇所特定において非常に高い信頼性を有していると言える。
 
-解析の結果、eyes（F1: 0.89）およびhead（F1: 0.86）は高いスコアを記録しており、顔周辺の部位については比較的安定した検出が可能であることが示された。
-
-一方で、部位ごとに特有の傾向も見られた。legについては、
-Recallが1.0であるのに対しPrecisionが0.44と低く、過剰検出（False Positive）が生じやすい傾向にある。
-対照的に、mouthおよびnoseは高いPrecisionを維持しているものの、Recallが相対的に低く、一部の事例において検出漏れ
-（False Negative）が発生していることが確認された。
-
-\begin{table}[h]
-  \centering
-  \caption{ラベル別の評価結果（Precision / Recall / F1）}
-  \label{tab:per_label_eval}
-  \begin{tabular}{l c c c c }
-    \hline
-    ラベル & Precision & Recall & F1 & support（正解出現数） \\
-    \hline
-    eyes   & 0.853 & 0.935 & 0.892 & 31 \\
-    head   & 0.897 & 0.833 & 0.864 & 42 \\
-    person & 1.000 & 0.686 & 0.814 & 51 \\
-    face   & 0.897 & 0.667 & 0.765 & 39 \\
-    arm    & 0.842 & 0.593 & 0.696 & 27 \\
-    nose   & 0.900 & 0.563 & 0.692 & 32 \\
-    mouth  & 0.696 & 0.571 & 0.627 & 28 \\
-    leg    & 0.440 & 1.000 & 0.611 & 11 \\
-    \hline
-  \end{tabular}
+\begin{table}[h] 
+  \centering 
+  \caption{ラベル別の評価結果（Precision / Recall / F1 / support）} 
+  \label{tab:per_label_eval} 
+  \begin{tabular}{l c c c c } \hline 
+    ラベル & Precision & Recall & F1 & support \\ \hline 
+    nose & 0.906 & 0.906 & 0.906 & 32 \\ 
+    eyes & 0.816 & 1.000 & 0.899 & 31 \\ 
+    mouth & 0.818 & 0.964 & 0.885 & 28 \\ 
+    face & 0.872 & 0.872 & 0.872 & 39 \\ 
+    arm & 0.806 & 0.926 & 0.862 & 27 \\ 
+    head & 0.865 & 0.762 & 0.810 & 42 \\ 
+    person & 0.971 & 0.647 & 0.776 & 51 \\ 
+    leg & 0.667 & 0.909 & 0.769 & 11 \\ \hline 
+  \end{tabular} 
 \end{table}
 
 \subsection{考察}
-Exact Matchが低水準に留まった主な要因として、本タスクがマルチラベル分類であることが挙げられる。
-複数の部位ラベルを同時に扱う特性上、たとえ大半の部位を正しく検出できていても、
-一部の部位（特に前述のmouthやnoseなど）に検出漏れ（FN）が生じるだけで、集合全体としての完全一致が損なわれるためである。
-各部位の課題と改善策については、以下の通り考察する。
+データから得られた本手法の特性について、以下の通り考察する。
 
-\begin{itemize}
-  \item legの精度改善:legは誤検出（FP）が多くPrecisionが低い傾向にある。
-  これに対しては、判定しきい値（$\theta_{\text{judge}}$）の引き上げや、
-  部位ごとに最適なしきい値を設定する手法が有効と考えられる。また、人物領域（person）との空間的な位置関係を制約条件とした
-  フィルタリングを導入することで、背景等の誤検出を抑制できる可能性がある。
-  \item mouthおよびnoseの再現率向上:これらの部位はRecallが相対的に低いことから、
-  線抽出時の背景差分しきい値や $\theta_{\text{judge}}$のしきい値を緩和することで、
-  微細な修正箇所の取りこぼしを低減できる余地がある。
+まず、顔パーツ（目・口・鼻）の検出漏れが極めて少ない点が挙げられる。これは第3章で述べた「芝居（表情）」
+に関わる修正を自動収集する上で大きな利点となる。特に「目」のRecallが1.0であることは、
+視線の向きや瞬きのニュアンスなど、アニメーションにおける感情表現の核心となる修正箇所の自動タグ付けが、
+本手法によって確実に実行可能であることを実証している。
+
+さらに、ラベルによって「過剰検出（FP）」と「検出漏れ（FN）」の性質が異なることがわかる。 
+\begin{itemize} 
+  \item 過剰検出（FP）の傾向: \texttt{leg} は Recall（0.909）に対し Precision（0.667）が低く、背景の線画や他の身体部位を「脚」と誤認しやすい。
+  \item 検出漏れ（FN）の傾向: \texttt{person} は Precision（0.971）に対し Recall（0.647）が低い。これは\texttt{person}のボックス面積に対する修正画素数の比率の小ささによるものと考えられる。
 \end{itemize}
-今後は、部位ごとの特性に応じたハイパーパラメータの最適化を図ることが、
-システム全体の信頼性向上に繋がると考えられる。
 
+このような過剰検出、検出漏れについては、しきい値の調整(例:θjudge の引き上げ)や，部位ごとの個別しきい値設定， あるいは人物領域(person)との空間関係を用いたフィルタリング等により改善できる可能性がある。
 
-\section{Qwen3 VLにより得られたタグの精度}
+総じて、本手法は顔周辺を中心とした特定の部位において高い精度を達成しており、
+「修正の自動タグ付け」を実現するための強力な基盤となることが確認された。
 
 \section{おわりに}
+本章では、前章で提案した Qwen3 VLおよび MM Grounding DINO を組み合わせた自動タグ付け手法について、NIITrigger LWA データセットを用いた精度評価を行った 。
+
+VLM による彩色画像の属性抽出においては、構図や姿勢といったマクロな情報の把握において実用的な精度が確認された一方、
+アニメ特有の表情表現やカメラアングルの判別には、汎用モデル特有の「正面バイアス」などの課題が明らかとなった。
+また、MM Grounding DINO による部位抽出では、特に顔周辺のパーツにおいて極めて高い網羅性（再現率）を示し、
+アニメ制作における「芝居」の修正を管理するための強力な基盤となることが実証された 。
+
+一方で、全身（\texttt{person}）の検出漏れや、\texttt{leg}の過剰検出といった課題も浮き彫りとなった 。
+これらの知見は、今後のアニメ制作支援システムにおけるアノテーション設計や、
+モデルの Fine-tuning における重要な指針となるものである。
+以上の評価結果を踏まえ、次章では本研究全体の総括と、今後の展望について述べる。
+
+
 
 \chapter{結論}
 \section{本論文のまとめ}
-\section{今後の課題}
+本論文では、日本のアニメーション制作支援を目的とし、修正素材の利活用を見据えた「自動タグ付けシステム」を提案した。
 
+2章では、アニメーション制作過程における中間生成物の蓄積・活用の現状を整理し、
+特に修正素材に対する蓄積手法が未確立であることを指摘した。
+また、アニメーション画像の整理に有用な可能性のある画像認識技術について紹介した
+
+3章では、アニメーション制作会社へ赴き、制作現場における修正素材の活用事例と
+実態について調査した。その結果、
+修正素材はスケジュール管理や作画の参考資料として高い有用性を有することを確認した。
+さらに、修正内容や箇所は担当者ごとに固有の特性を持つことを明らかにした。
+
+4章では、調査結果に従って修正の活用方法を提示し、それに基づいた修正のタグについて設計した。
+さらに、視覚言語モデル（VLM）と物体検出モデルを組み合わせ、タグを自動で取得できる
+手法を提案した。
+
+5章では、提案手法を用いた評価実験を行い、
+自動付与されたタグが実運用に耐えうる精度を実現しているかについて考察した。
+
+以上の結果から、本研究で提案した修正の自動タグ付け手法は、修正に適した設計になっており、
+アニメーション制作の支援となりうるものであることを示した。
+
+\section{今後の課題}
+本システムは、渕上らのシステムを拡張する設計となっているが、
+実システムへの組み込みは未達成である。
+
+加えて、現在の自動タグ付け手法は修正箇所の推論に依拠しており、
+取得可能な情報は表層的な内容に偏っている。
+「修正の発生要因」を推定する手法を考案できれば、修正のより本質的な分析が可能となることが期待される。
 
 \appendix
 \chapter{リテイクに関与しない部分のアニメ会社調査結果}
