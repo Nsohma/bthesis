@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.1.2-u2.00-250202-2.6 (utf8.uptex) (TeX Live 2025) (preloaded format=uplatex 2025.4.30)  30 JAN 2026 14:44
+This is e-upTeX, Version 3.141592653-p4.1.2-u2.00-250202-2.6 (utf8.uptex) (TeX Live 2025) (preloaded format=uplatex 2025.4.30)  30 JAN 2026 16:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -783,13 +783,15 @@ LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
 
 [6
 
-] (build/bthesis.lot)
+]
+
+[7] (build/bthesis.lot)
 \tf@lot=\write7
 \openout7 = `bthesis.lot'.
 
 
 
-[7
+[8
 
 ]
 第1章
@@ -823,16 +825,16 @@ LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
 [2]
 第2章
 LaTeX Font Info:    Font shape `JT2/gt/m/n' will be
-(Font)              scaled to size 11.09619pt on input line 161.
+(Font)              scaled to size 11.09619pt on input line 159.
 LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
-(Font)              scaled to size 11.09619pt on input line 161.
+(Font)              scaled to size 11.09619pt on input line 159.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 161.
+(hyperref)                removing `\@ifnextchar' on input line 159.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 185.
+(hyperref)                removing `\@ifnextchar' on input line 183.
 
 
 
@@ -841,21 +843,21 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 ]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 206.
+(hyperref)                removing `\@ifnextchar' on input line 204.
 
 
 
 [4]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 231.
+(hyperref)                removing `\@ifnextchar' on input line 229.
 
 File: fig/shotGridSchedule.png Graphic file (type bmp)
 <fig/shotGridSchedule.png>
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 8.32214pt on input line 243.
+(Font)              scaled to size 8.32214pt on input line 241.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 8.32214pt on input line 243.
+(Font)              scaled to size 8.32214pt on input line 241.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -874,7 +876,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [5]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 283.
+(hyperref)                removing `\@ifnextchar' on input line 281.
 
 
 
@@ -891,27 +893,27 @@ File: fig/savepointFinger.jpg Graphic file (type bmp)
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 336.
+(hyperref)                removing `\@ifnextchar' on input line 334.
 
 
 
 [8]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 350.
+(hyperref)                removing `\@ifnextchar' on input line 348.
 
 
 
 [9]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 365.
+(hyperref)                removing `\@ifnextchar' on input line 363.
 
 File: fig/OLMFMTool.png Graphic file (type bmp)
 <fig/OLMFMTool.png>
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 387.
+(hyperref)                removing `\@ifnextchar' on input line 385.
 
 
 
@@ -921,11 +923,11 @@ File: fig/redmineChiket.png Graphic file (type bmp)
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 405.
+(hyperref)                removing `\@ifnextchar' on input line 403.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 426.
+(hyperref)                removing `\@ifnextchar' on input line 424.
 
 
 
@@ -935,14 +937,14 @@ File: fig/AIMDB_mid.png Graphic file (type bmp)
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 454.
+(hyperref)                removing `\@ifnextchar' on input line 452.
 
 
 
 [12]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 474.
+(hyperref)                removing `\@ifnextchar' on input line 472.
 
 
 
@@ -952,7 +954,7 @@ File: fig/NagaoDatabase.jpg Graphic file (type bmp)
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 516.
+(hyperref)                removing `\@ifnextchar' on input line 514.
 
 File: fig/XiaWorkpage.png Graphic file (type bmp)
 <fig/XiaWorkpage.png>
@@ -969,7 +971,7 @@ File: fig/XiaVideopage.png Graphic file (type bmp)
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@ifnextchar' on input line 578.
+(hyperref)                removing `\@ifnextchar' on input line 576.
 
 
-LaTeX Warning: Reference `fucciInf
+LaTeX Warning: Reference `fuc

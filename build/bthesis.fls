@@ -419,3 +419,40 @@ INPUT ./fig/GroundingDino.png
 INPUT ./fig/GroundingDino.png
 INPUT ./fig/GroundingDino.png
 INPUT extractbb -B cropbox -O fig/GroundingDino.png
+INPUT ./fig/mmdetection.png
+INPUT ./fig/mmdetection.png
+INPUT ./fig/mmdetection.png
+INPUT extractbb -B cropbox -O fig/mmdetection.png
+INPUT ./fig/AnimationFlowchart.png
+INPUT ./fig/AnimationFlowchart.png
+INPUT ./fig/AnimationFlowchart.png
+INPUT extractbb -B cropbox -O fig/AnimationFlowchart.png
+INPUT ./fig/ekonnte.png
+INPUT ./fig/ekonnte.png
+INPUT ./fig/ekonnte.png
+INPUT extractbb -B cropbox -O fig/ekonnte.png
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm
+INPUT ./fig/ADCF登録用UI.png
+INPUT ./fig/ADCF登録用UI.png
+INPUT ./fig/ADCF登録用UI.png
+INPUT extractbb -B cropbox -O fig/ADCF登録用UI.png
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmmi9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisr-h.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmmib9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmmib6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy9.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-h.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-h.tfm
+INPUT ./fig/演出.png
+INPUT ./fig/演出.png
+INPUT ./fig/演出.png
+INPUT extractbb -B cropbox -O fig/演出.png
